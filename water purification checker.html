@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Purification Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #cce7ff;
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 50%;
+        }
+        .sidebar {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 30%;
+        }
+        input, button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        h2 {
+            text-align: center;
+        }
+        .guide {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+        .guide-box {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .excellent { background-color: #a8e6a2; border: 2px solid #4CAF50; } /* Light Green */
+        .good { background-color: #ffff99; border: 2px solid #FFD700; } /* Light Yellow */
+        .moderate { background-color: #ffcc99; border: 2px solid #FFA500; } /* Light Orange */
+        .poor { background-color: #ff9999; border: 2px solid #F44336; } /* Light Red */
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar (Water Quality Guide) -->
+    <div class="sidebar">
+        <h2>Water Quality Guide</h2>
+        <div class="guide"><span class="guide-box excellent"></span> <b>Excellent:</b> TDS 50-150 ppm (Safe & Mineral-rich)</div>
+        <div class="guide"><span class="guide-box good"></span> <b>Good:</b> TDS 150-300 ppm (Slight filtration may help)</div>
+        <div class="guide"><span class="guide-box moderate"></span> <b>Moderate:</b> TDS 300-500 ppm (Requires filtration)</div>
+        <div class="guide"><span class="guide-box poor"></span> <b>Poor:</b> TDS 500+ ppm (Needs RO Purification)</div>
+    </div>
+
+    <!-- Main Container (Water Purification Checker) -->
+    <div class="container">
+        <h2>Water Purification Checker</h2>
+
+        <label for="district">Enter District Name:</label>
+        <input type="text" id="district" placeholder="Enter District Name" oninput="updateValues()"><br>
+
+        <label for="phValue">pH Value:</label>
+        <input type="number" id="phValue" step="0.1" placeholder="Enter pH Value"><br>
+
+        <label for="tdsValue">TDS Value (ppm):</label>
+        <input type="number" id="tdsValue" step="1" placeholder="Enter TDS Value"><br>
+
+        <button onclick="checkWaterQuality()">Check Purification</button>
+
+        <div class="result" id="result"></div>
+        <div class="result" id="purifier"></div>
+    </div>
+
+    <script>
+        // Predefined water quality data for different districts
+        const districtData = {
+            "district1": { ph: 7.2, tds: 180 },
+            "district2": { ph: 6.0, tds: 600 },
+            "district3": { ph: 8.8, tds: 90 }
+        };
+
+        function updateValues() {
+            let enteredDistrict = document.getElementById("district").value.toLowerCase();
+            if (enteredDistrict in districtData) {
+                document.getElementById("phValue").value = districtData[enteredDistrict].ph;
+                document.getElementById("tdsValue").value = districtData[enteredDistrict].tds;
+            }
+        }
+
+        function checkWaterQuality() {
+            let ph = parseFloat(document.getElementById("phValue").value);
+            let tds = parseFloat(document.getElementById("tdsValue").value);
+            let resultText = "";
+            let purifierRecommendation = "";
+
+            if (isNaN(ph) || isNaN(tds)) {
+                resultText = "Please enter valid pH and TDS values.";
+            } else {
+                // pH analysis
+                if (ph < 6.5) {
+                    resultText += "Water is acidic. Consider adding alkaline substances like baking soda.<br>";
+                } else if (ph > 8.5) {
+                    resultText += "Water is too alkaline. Use acid-based purification like carbon dioxide treatment.<br>";
+                } else {
+                    resultText += "Water pH is within the safe range.<br>";
+                }
+
+                // TDS analysis
+                if (tds < 50) {
+                    resultText += "TDS is too low; water lacks essential minerals. Consider mineralization.<br>";
+                    purifierRecommendation = "Use a **Mineralizer or Alkaline Filter** to add essential minerals.";
+                } else if (tds >= 50 && tds <= 150) {
+                    resultText += "TDS is within the ideal range.<br>";
+                    purifierRecommendation = "A **UV or UF Purifier** is recommended for microbial purification.";
+                } else if (tds > 150 && tds <= 500) {
+                    resultText += "TDS is safe but may need filtration.<br>";
+                    purifierRecommendation = "A **UV + UF + Carbon Filter** setup is best for further purification.";
+                } else if (tds > 500) {
+                    resultText += "TDS is too high; requires advanced purification.<br>";
+                    purifierRecommendation = "Use a **Reverse Osmosis (RO) Water Purifier** for safe drinking water.";
+                }
+            }
+
+            document.getElementById("result").innerHTML = resultText;
+            document.getElementById("purifier").innerHTML = `<b>Recommended Water Purifier:</b> <br> ${purifierRecommendation}`;
+        }
+    </script>
+
+</body>
+</html>
